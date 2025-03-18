@@ -1,7 +1,9 @@
 const express = require("express");
 const bodyParser = require("body-parser");
 const cron = require("node-cron");
-const { scrapeJobs } = require("./jobScraper"); // Import job scraper
+// const { scrapeJobs } = require("./jobScraper"); // Import job scraper
+// const { scrapeGoogleJobs } = require("./jobScraper"); // Import job scraper
+const { scrapeTwitterJobs } = require("./jobScraper"); // Import job scraper
 const { sendJobEmail } = require("./emailService"); // Import email sender
 const { matchJobsWithAI } = require("./aiJobMatcher"); // Import AI job matcher
 
@@ -32,7 +34,11 @@ cron.schedule(
 
     for (const user of userPreferences) {
       try {
-        let jobs = await scrapeJobs(user.role, user.location, user.jobType);
+        let jobs = await scrapeTwitterJobs(
+          user.role,
+          user.location,
+          user.jobType
+        );
         let rankedJobs = await matchJobsWithAI(jobs, user); // AI ranks the jobs
         await sendJobEmail(user.email, rankedJobs);
       } catch (error) {
