@@ -278,8 +278,8 @@ const queryData =
 const scrapeJobs = async () => {
   const browser = await puppeteer.launch({
     headless: false,
-    executablePath:
-      "C:\\Users\\Remi\\.cache\\puppeteer\\chrome\\win64-134.0.6998.35\\chrome-win64\\chrome.exe",
+    executablePath: "/tmp/chrome",
+    // "C:\\Users\\Remi\\.cache\\puppeteer\\chrome\\win64-134.0.6998.35\\chrome-win64\\chrome.exe",
   });
 
   const page = await browser.newPage();
