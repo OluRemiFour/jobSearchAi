@@ -50,3 +50,10 @@
 // );
 
 // app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
+
+//   "scripts": {
+//     "test": "echo \"Error: no test specified\" && exit 1",
+//     "start": "node jobScraper.js",
+//     "dev": "nodemon index.js",
+//     "install-puppeteer": "PUPPETEER_DOWNLOAD_PATH=/tmp npx puppeteer browsers install chrome"
+//   },
