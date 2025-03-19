@@ -278,7 +278,9 @@ const queryData =
 const scrapeJobs = async () => {
   const browser = await puppeteer.launch({
     headless: false,
-    executablePath: "/tmp/chrome",
+    // executablePath: "/tmp/chrome",
+    executablePath: "/usr/bin/google-chrome-stable", // Use system's Chrome
+    args: ["--no-sandbox", "--disable-setuid-sandbox"], //
     // "C:\\Users\\Remi\\.cache\\puppeteer\\chrome\\win64-134.0.6998.35\\chrome-win64\\chrome.exe",
   });
 
