@@ -3,8 +3,7 @@
   "version": "1.0.0",
   "main": "aiAgent.js",
   "scripts": {
-    "start": "node jobScraper.js",
-    "build": "npm install && npm install puppeteer"
+    "start": "node jobScraper.js"
   },
   "keywords": [],
   "author": "",
