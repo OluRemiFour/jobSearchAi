@@ -285,11 +285,11 @@ const scrapeJobs = async () => {
   // });
 
   const browser = await puppeteer.launch({
-    executablePath: "/usr/bin/google-chrome-stable", // Hardcoded path
+    executablePath:
+      process.env.PUPPETEER_EXECUTABLE_PATH || "/usr/bin/google-chrome-stable",
     headless: true,
     args: ["--no-sandbox", "--disable-setuid-sandbox"],
   });
-
   const page = await browser.newPage();
   console.log("🔍 Searching for jobs...");
 
