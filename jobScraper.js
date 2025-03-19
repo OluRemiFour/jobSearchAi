@@ -1,3 +1,4 @@
+require("dotenv").config();
 const puppeteer = require("puppeteer");
 const nodemailer = require("nodemailer");
 const cron = require("node-cron");
@@ -109,14 +110,14 @@ const sendTestEmail = async (jobArray) => {
   let transporter = nodemailer.createTransport({
     service: "gmail",
     auth: {
-      user: "midea3671@gmail.com",
-      pass: "hbkucsvqmohvuvyu",
+      user: process.env.SMTP_USER,
+      pass: process.env.SMTP_PASS,
     },
   });
 
   let mailOptions = {
-    from: "midenotch@gmail.com",
-    to: "midenotch@gmail.com", // Send to yourself for testing
+    from: process.env.SMTP_USER,
+    to: process.env.SMTP_USER, // Send to yourself for testing
     subject: "PhD Research Openings in Europe",
     text: emailContent, // Plain text format
     html: `<pre>${emailContent}</pre>`, // HTML format
