@@ -276,12 +276,18 @@ const queryData =
   "Find PhD research job openings in Europe that require an MSc in Animal Science, Health, Production, or Agricultural Science. Prioritize opportunities that match my skills in statistical analysis (Excel, R, SQL) and laboratory expertise (PCR, biochemical analysis). Extract detailed information, including job description, requirements, application links, location, and contact details of the poster.";
 
 const scrapeJobs = async () => {
+  // const browser = await puppeteer.launch({
+  //   headless: false,
+  //   // executablePath: "/tmp/chrome",
+  //   executablePath: "/usr/bin/google-chrome-stable", // Use system's Chrome
+  //   args: ["--no-sandbox", "--disable-setuid-sandbox"], //
+  //   // "C:\\Users\\Remi\\.cache\\puppeteer\\chrome\\win64-134.0.6998.35\\chrome-win64\\chrome.exe",
+  // });
+
   const browser = await puppeteer.launch({
-    headless: false,
-    // executablePath: "/tmp/chrome",
-    executablePath: "/usr/bin/google-chrome-stable", // Use system's Chrome
-    args: ["--no-sandbox", "--disable-setuid-sandbox"], //
-    // "C:\\Users\\Remi\\.cache\\puppeteer\\chrome\\win64-134.0.6998.35\\chrome-win64\\chrome.exe",
+    executablePath: "/usr/bin/google-chrome-stable", // Hardcoded path
+    headless: true,
+    args: ["--no-sandbox", "--disable-setuid-sandbox"],
   });
 
   const page = await browser.newPage();
