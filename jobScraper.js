@@ -1,5 +1,6 @@
 const puppeteer = require("puppeteer");
 const nodemailer = require("nodemailer");
+const cron = require("node-cron");
 
 const queryData =
   "Find PhD research job openings in Europe that require an MSc in Animal Science, Health, Production, or Agricultural Science. Prioritize opportunities that match my skills in statistical analysis (Excel, R, SQL) and laboratory expertise (PCR, biochemical analysis). Extract detailed information, including job description, requirements, application links, location, and contact details of the poster.";
@@ -135,9 +136,130 @@ const sendTestEmail = async (jobArray) => {
   await sendTestEmail(jobDetails); // ✅ Pass the data correctly
 })();
 
-cron.schedule("0 * /20 * * *", () => {
+cron.schedule("*/20 * * * *", () => {
   console.log("⏳ Running scheduled job scraping...");
   scrapeJobs();
 });
+// -------------------------------------------------------------
+// require("dotenv").config();
+// const puppeteer = require("puppeteer-extra");
+// const nodemailer = require("nodemailer");
+// const StealthPlugin = require("puppeteer-extra-plugin-stealth");
+// const randomUserAgent = require("random-useragent");
 
-console.log("✅ Job scheduler started. It will run every 20 hours.");
+// puppeteer.use(StealthPlugin());
+
+// const queryData =
+//   "Find PhD research job openings in Europe that require an MSc in Animal Science or Animal Production and health, or Animal genetics. Prioritize opportunities that match my skills in statistical analysis (Excel, R, SQL) and laboratory expertise (PCR, biochemical analysis, or molecular analysis). Extract detailed information, including job description, requirements, application links, location, and contact details of the poster.";
+
+// const scrapeJobs = async (queryData) => {
+//   const browser = await puppeteer.launch({
+//     headless: false, // Set to true for production
+//     args: ["--no-sandbox", "--disable-setuid-sandbox"],
+//   });
+
+//   try {
+//     const page = await browser.newPage();
+
+//     // Set a random user agent to avoid detection
+//     await page.setUserAgent(randomUserAgent.getRandom());
+
+//     // await page.setUserAgent(
+//     //   "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/100.0.0.0 Safari/537.36"
+//     // );
+
+//     console.log("🔍 Searching for jobs...");
+
+//     const searchUrl = `https://www.google.com/search?q=${encodeURIComponent(
+//       queryData +
+//         " (site:linkedin.com OR site:indeed.com OR site:researchgate.net OR site:glassdoor.com OR site:academia.edu OR site:x.com)"
+//     )}`;
+
+//     await page.goto(searchUrl, { waitUntil: "networkidle2" });
+
+//     // Check if CAPTCHA appears
+//     if (await page.$("form[action='/sorry/index']")) {
+//       console.log("⚠️ CAPTCHA detected! Please solve it manually.");
+//       await page.waitForTimeout(80000); // Give user 30 seconds to solve manually
+//     }
+
+//     let jobs = [];
+//     let hasNextPage = true;
+
+//     while (hasNextPage) {
+//       await page.waitForSelector("h3");
+
+//       const jobsOnPage = await page.evaluate(() => {
+//         return Array.from(document.querySelectorAll("h3"))
+//           .map((el) => {
+//             const link = el.closest("a")?.href;
+//             return { title: el.innerText, link };
+//           })
+//           .filter((job) => job.link);
+//       });
+
+//       jobs.push(...jobsOnPage);
+
+//       // Check for "Next" button
+//       const nextButton = await page.$("a[aria-label='Next']");
+//       if (nextButton) {
+//         await nextButton.click();
+//         await page.waitForTimeout(5000); // Wait for new page to load
+//       } else {
+//         hasNextPage = false;
+//       }
+//     }
+
+//     console.log("✅ Found Jobs:", jobs);
+//     return jobs;
+//   } catch (error) {
+//     console.error("❌ Error during scraping:", error);
+//     return [];
+//   } finally {
+//     await browser.close();
+//   }
+// };
+
+// const sendTestEmail = async (jobArray) => {
+//   if (!process.env.SMTP_USER || !process.env.SMTP_PASS) {
+//     console.error("❌ SMTP credentials are missing. Check your .env file.");
+//     return;
+//   }
+
+//   const transporter = nodemailer.createTransport({
+//     service: "gmail",
+//     auth: {
+//       user: process.env.SMTP_USER,
+//       pass: process.env.SMTP_PASS,
+//     },
+//   });
+
+//   const emailContent = jobArray
+//     .map((job, index) => `📌 ${index + 1}. ${job.title} - ${job.link}`)
+//     .join("\n");
+
+//   const mailOptions = {
+//     from: process.env.SMTP_USER,
+//     to: process.env.SMTP_USER,
+//     subject: "PhD Research Openings in Europe",
+//     text: `📢 **PhD Research Openings in Europe**\n\n${emailContent}`,
+//   };
+
+//   try {
+//     const info = await transporter.sendMail(mailOptions);
+//     console.log("✅ Email Sent: " + info.response);
+//   } catch (error) {
+//     console.error("❌ Error sending email:", error);
+//   }
+// };
+
+// // Run the script
+// (async () => {
+//   const jobDetails = await scrapeJobs(queryData);
+//   if (jobDetails.length > 0) {
+//     await sendTestEmail(jobDetails);
+//   } else {
+//     console.log("❌ No jobs found.");
+//   }
+// })();
+// ----------------------------------------------------------------
