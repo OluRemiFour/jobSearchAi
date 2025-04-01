@@ -1,13 +1,21 @@
 require("dotenv").config();
-const puppeteer = require("puppeteer");
+const puppeteer = require("puppeteer-extra");
 const nodemailer = require("nodemailer");
 const cron = require("node-cron");
+const StealthPlugin = require("puppeteer-extra-plugin-stealth");
+// const { executablePath } = require("puppeteer");
+puppeteer.use(StealthPlugin());
 
 const queryData =
   "Find PhD research job openings in Europe that require an MSc in Animal Science, Health, Production, or Agricultural Science. Prioritize opportunities that match my skills in statistical analysis (Excel, R, SQL) and laboratory expertise (PCR, biochemical analysis). Extract detailed information, including job description, requirements, application links, location, and contact details of the poster.";
 
 const scrapeJobs = async () => {
-  const browser = await puppeteer.launch({ headless: false });
+  const browser = await puppeteer.launch({
+    headless: false,
+    executablePath: "C:/Program Files/Google/Chrome/Application/chrome.exe",
+    userDataDir: "C:/Users/Remi/AppData/Local/Google/Chrome/User Data",
+    // args: ["--proxy-server=http://162.23.125.34:8080"],
+  });
   const page = await browser.newPage();
 
   console.log("🔍 Searching for jobs...");
@@ -17,6 +25,7 @@ const scrapeJobs = async () => {
     `https://www.google.com/search?q=${encodeURIComponent(
       queryData +
         " site:linkedin.com OR site:indeed.com OR site:researchgate.net OR site:glassdoor.com OR site:academia.edu OR site:x.com OR site:google.com"
+      // " site:findaphd.com OR site:jobs.ac.uk/phd"
     )}`,
     {
       waitUntil: "networkidle2",
