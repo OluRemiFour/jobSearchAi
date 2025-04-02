@@ -2,9 +2,9 @@ require("dotenv").config();
 const puppeteer = require("puppeteer");
 const nodemailer = require("nodemailer");
 const cron = require("node-cron");
-const StealthPlugin = require("puppeteer-extra-plugin-stealth");
+// const StealthPlugin = require("puppeteer-extra-plugin-stealth");
 // const { executablePath } = require("puppeteer");
-puppeteer.use(StealthPlugin());
+// puppeteer.use(StealthPlugin());
 
 const queryData =
   "Find PhD research job openings in Europe that require an MSc in Animal Science, Health, Production, or Agricultural Science. Prioritize opportunities that match my skills in statistical analysis (Excel, R, SQL) and laboratory expertise (PCR, biochemical analysis). Extract detailed information, including job description, requirements, application links, location, and contact details of the poster.";
