@@ -163,61 +163,45 @@ puppeteer.use(StealthPlugin());
 const queryData =
   "Find PhD research job openings in Europe that require an MSc in Animal Science, Health, Production, or Agricultural Science. Prioritize opportunities that match my skills in statistical analysis (Excel, R, SQL) and laboratory expertise (PCR, biochemical analysis). Extract detailed information, including job description, requirements, application links, location, and contact details of the poster.";
 
-const getChromiumPath = () => {
-  // Try environment variable first
-  if (process.env.PUPPETEER_EXECUTABLE_PATH) {
-    return process.env.PUPPETEER_EXECUTABLE_PATH;
-  }
-
-  // Common Chromium paths on Linux
-  const paths = [
+const scrapeJobs = async () => {
+  console.log("🚀 Starting job scraper...");
+  const possiblePaths = [
     "/usr/bin/chromium-browser",
     "/usr/bin/chromium",
     "/usr/bin/google-chrome-stable",
-    "/usr/bin/google-chrome",
-    "/usr/local/bin/chromium",
-    "/opt/google/chrome/chrome",
-    "/opt/render/.cache/puppeteer/chrome/linux-*/chrome-linux/chrome",
+    "/opt/render/project/src/node_modules/puppeteer/.local-chromium/linux-*/chrome-linux/chrome",
   ];
 
-  // Try to find existing path
-  for (const path of paths) {
+  let browser;
+  let lastError;
+
+  for (const path of possiblePaths) {
     try {
-      require("fs").accessSync(path);
-      return path;
-    } catch (e) {
-      continue;
+      console.log(`🔧 Trying Chromium path: ${path}`);
+      browser = await puppeteer.launch({
+        headless: "new",
+        executablePath: path,
+        args: [
+          "--no-sandbox",
+          "--disable-setuid-sandbox",
+          "--disable-dev-shm-usage",
+          "--single-process",
+          "--disable-accelerated-2d-canvas",
+          "--disable-gpu",
+        ],
+      });
+      console.log("✅ Browser launched successfully");
+      break;
+    } catch (error) {
+      lastError = error;
+      console.log(`⚠️ Failed with path ${path}: ${error.message}`);
     }
   }
 
-  return null;
-};
-
-const scrapeJobs = async () => {
-  console.log("🚀 Starting job scraper...");
-
-  const chromiumPath = getChromiumPath();
-  if (!chromiumPath) {
-    throw new Error("Chromium not found in any standard location");
+  if (!browser) {
+    console.error("❌ All Chromium paths failed:", lastError);
+    throw new Error("Could not launch browser with any known path");
   }
-
-  console.log(`🔧 Using Chromium path: ${chromiumPath}`);
-
-  const browser = await puppeteer.launch({
-    headless: "new",
-    executablePath: chromiumPath,
-    args: [
-      "--no-sandbox",
-      "--disable-setuid-sandbox",
-      "--disable-dev-shm-usage",
-      "--single-process",
-      "--disable-accelerated-2d-canvas",
-      "--disable-gpu",
-      "--remote-debugging-port=9222",
-    ],
-    ignoreDefaultArgs: ["--disable-extensions"],
-  });
-
   try {
     const page = await browser.newPage();
     await page.setUserAgent(
