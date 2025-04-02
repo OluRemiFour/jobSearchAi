@@ -18,7 +18,8 @@ const scrapeJobs = async () => {
   // });
   const browser = await puppeteer.launch({
     headless: "new",
-    executablePath: process.env.PUPPETEER_EXECUTABLE_PATH,
+    executablePath:
+      process.env.PUPPETEER_EXECUTABLE_PATH || "/usr/bin/chromium-browser",
     args: [
       "--no-sandbox",
       "--disable-setuid-sandbox",
@@ -26,6 +27,7 @@ const scrapeJobs = async () => {
       "--single-process",
       "--disable-accelerated-2d-canvas",
       "--disable-gpu",
+      "--lang=en-US,en",
     ],
   });
 
