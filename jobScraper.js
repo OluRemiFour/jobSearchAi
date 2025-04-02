@@ -163,45 +163,166 @@ puppeteer.use(StealthPlugin());
 const queryData =
   "Find PhD research job openings in Europe that require an MSc in Animal Science, Health, Production, or Agricultural Science. Prioritize opportunities that match my skills in statistical analysis (Excel, R, SQL) and laboratory expertise (PCR, biochemical analysis). Extract detailed information, including job description, requirements, application links, location, and contact details of the poster.";
 
+// const scrapeJobs = async () => {
+//   console.log("🚀 Starting job scraper...");
+//   const possiblePaths = [
+//     "/usr/bin/chromium-browser",
+//     "/usr/bin/chromium",
+//     "/usr/bin/google-chrome-stable",
+//     "/opt/render/project/src/node_modules/puppeteer/.local-chromium/linux-*/chrome-linux/chrome",
+//   ];
+
+//   let browser;
+//   let lastError;
+
+//   for (const path of possiblePaths) {
+//     try {
+//       console.log(`🔧 Trying Chromium path: ${path}`);
+//       browser = await puppeteer.launch({
+//         headless: "new",
+//         executablePath: path,
+//         args: [
+//           "--no-sandbox",
+//           "--disable-setuid-sandbox",
+//           "--disable-dev-shm-usage",
+//           "--single-process",
+//           "--disable-accelerated-2d-canvas",
+//           "--disable-gpu",
+//         ],
+//       });
+//       console.log("✅ Browser launched successfully");
+//       break;
+//     } catch (error) {
+//       lastError = error;
+//       console.log(`⚠️ Failed with path ${path}: ${error.message}`);
+//     }
+//   }
+
+//   if (!browser) {
+//     console.error("❌ All Chromium paths failed:", lastError);
+//     throw new Error("Could not launch browser with any known path");
+//   }
+//   try {
+//     const page = await browser.newPage();
+//     await page.setUserAgent(
+//       "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
+//     );
+
+//     console.log("🔍 Searching for jobs...");
+//     await page.goto(
+//       `https://www.google.com/search?q=${encodeURIComponent(
+//         queryData +
+//           " site:linkedin.com OR site:indeed.com OR site:researchgate.net OR site:glassdoor.com OR site:academia.edu OR site:x.com OR site:google.com"
+//       )}`,
+//       {
+//         waitUntil: "networkidle2",
+//         timeout: 60000,
+//       }
+//     );
+
+//     // Wait for search results
+//     await page.waitForSelector("h3", { timeout: 30000 });
+
+//     // Extract job post links and titles
+//     const jobs = await page.evaluate(() => {
+//       return Array.from(document.querySelectorAll("h3"))
+//         .map((el) => {
+//           const link = el.closest("a")?.href;
+//           return { title: el.innerText, link };
+//         })
+//         .filter((job) => job.link);
+//     });
+
+//     console.log("✅ Found Jobs:", jobs.length);
+
+//     let jobDetails = [];
+//     const maxJobsToScrape = 5; // Limit for Render's resources
+
+//     for (let i = 0; i < Math.min(jobs.length, maxJobsToScrape); i++) {
+//       const job = jobs[i];
+//       const jobPage = await browser.newPage();
+
+//       try {
+//         console.log(
+//           `🔎 Scraping job ${i + 1}/${Math.min(
+//             jobs.length,
+//             maxJobsToScrape
+//           )}: ${job.title.substring(0, 50)}...`
+//         );
+
+//         await jobPage.goto(job.link, {
+//           waitUntil: "domcontentloaded",
+//           timeout: 30000,
+//         });
+
+//         // Random delay to appear more human
+//         await jobPage.waitForTimeout(2000 + Math.random() * 3000);
+
+//         const jobData = await jobPage.evaluate(() => {
+//           const description =
+//             document.querySelector(
+//               "p, .description, .job-desc, .jobDescriptionContent"
+//             )?.innerText || "No description available";
+
+//           const requirements =
+//             document.querySelector(".qualifications, .requirements, .req-list")
+//               ?.innerText || "No requirements listed";
+
+//           const location =
+//             document.querySelector(".location, .job-location, .jobs-location")
+//               ?.innerText || "Location not specified";
+
+//           return { description, requirements, location };
+//         });
+
+//         jobDetails.push({
+//           title: job.title,
+//           link: job.link,
+//           description:
+//             jobData.description.substring(0, 300) +
+//             (jobData.description.length > 300 ? "..." : ""),
+//           requirements:
+//             jobData.requirements.substring(0, 300) +
+//             (jobData.requirements.length > 300 ? "..." : ""),
+//           location: jobData.location,
+//         });
+//       } catch (error) {
+//         console.log(`⚠️ Error scraping ${job.title}:`, error.message);
+//       } finally {
+//         await jobPage.close();
+//       }
+//     }
+
+//     console.log("📌 Final Job Listings:", jobDetails.length);
+//     return jobDetails;
+//   } finally {
+//     await browser.close();
+//   }
+// };
+
 const scrapeJobs = async () => {
   console.log("🚀 Starting job scraper...");
-  const possiblePaths = [
-    "/usr/bin/chromium-browser",
-    "/usr/bin/chromium",
-    "/usr/bin/google-chrome-stable",
-    "/opt/render/project/src/node_modules/puppeteer/.local-chromium/linux-*/chrome-linux/chrome",
-  ];
 
   let browser;
-  let lastError;
+  try {
+    browser = await puppeteer.launch({
+      headless: "new",
+      args: [
+        "--no-sandbox",
+        "--disable-setuid-sandbox",
+        "--disable-dev-shm-usage",
+        "--single-process",
+        "--disable-accelerated-2d-canvas",
+        "--disable-gpu",
+      ],
+    });
 
-  for (const path of possiblePaths) {
-    try {
-      console.log(`🔧 Trying Chromium path: ${path}`);
-      browser = await puppeteer.launch({
-        headless: "new",
-        executablePath: path,
-        args: [
-          "--no-sandbox",
-          "--disable-setuid-sandbox",
-          "--disable-dev-shm-usage",
-          "--single-process",
-          "--disable-accelerated-2d-canvas",
-          "--disable-gpu",
-        ],
-      });
-      console.log("✅ Browser launched successfully");
-      break;
-    } catch (error) {
-      lastError = error;
-      console.log(`⚠️ Failed with path ${path}: ${error.message}`);
-    }
+    console.log("✅ Browser launched successfully");
+  } catch (error) {
+    console.error("❌ Failed to launch browser:", error);
+    throw new Error("Could not launch browser.");
   }
 
-  if (!browser) {
-    console.error("❌ All Chromium paths failed:", lastError);
-    throw new Error("Could not launch browser with any known path");
-  }
   try {
     const page = await browser.newPage();
     await page.setUserAgent(
@@ -223,7 +344,6 @@ const scrapeJobs = async () => {
     // Wait for search results
     await page.waitForSelector("h3", { timeout: 30000 });
 
-    // Extract job post links and titles
     const jobs = await page.evaluate(() => {
       return Array.from(document.querySelectorAll("h3"))
         .map((el) => {
@@ -234,67 +354,7 @@ const scrapeJobs = async () => {
     });
 
     console.log("✅ Found Jobs:", jobs.length);
-
-    let jobDetails = [];
-    const maxJobsToScrape = 5; // Limit for Render's resources
-
-    for (let i = 0; i < Math.min(jobs.length, maxJobsToScrape); i++) {
-      const job = jobs[i];
-      const jobPage = await browser.newPage();
-
-      try {
-        console.log(
-          `🔎 Scraping job ${i + 1}/${Math.min(
-            jobs.length,
-            maxJobsToScrape
-          )}: ${job.title.substring(0, 50)}...`
-        );
-
-        await jobPage.goto(job.link, {
-          waitUntil: "domcontentloaded",
-          timeout: 30000,
-        });
-
-        // Random delay to appear more human
-        await jobPage.waitForTimeout(2000 + Math.random() * 3000);
-
-        const jobData = await jobPage.evaluate(() => {
-          const description =
-            document.querySelector(
-              "p, .description, .job-desc, .jobDescriptionContent"
-            )?.innerText || "No description available";
-
-          const requirements =
-            document.querySelector(".qualifications, .requirements, .req-list")
-              ?.innerText || "No requirements listed";
-
-          const location =
-            document.querySelector(".location, .job-location, .jobs-location")
-              ?.innerText || "Location not specified";
-
-          return { description, requirements, location };
-        });
-
-        jobDetails.push({
-          title: job.title,
-          link: job.link,
-          description:
-            jobData.description.substring(0, 300) +
-            (jobData.description.length > 300 ? "..." : ""),
-          requirements:
-            jobData.requirements.substring(0, 300) +
-            (jobData.requirements.length > 300 ? "..." : ""),
-          location: jobData.location,
-        });
-      } catch (error) {
-        console.log(`⚠️ Error scraping ${job.title}:`, error.message);
-      } finally {
-        await jobPage.close();
-      }
-    }
-
-    console.log("📌 Final Job Listings:", jobDetails.length);
-    return jobDetails;
+    return jobs;
   } finally {
     await browser.close();
   }
