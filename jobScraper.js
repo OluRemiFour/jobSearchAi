@@ -12,7 +12,9 @@ const queryData =
 const scrapeJobs = async () => {
   const browser = await puppeteer.launch({
     headless: false,
-    executablePath: "C:/Program Files/Google/Chrome/Application/chrome.exe",
+    executablePath: "C:\\Program Files\\Chromium\\Application\\chrome.exe", // Path to chrome.exe
+    args: ["--no-sandbox", "--disable-setuid-sandbox"],
+    // executablePath: "C:/Program Files/Google/Chrome/Application/chrome.exe",
     userDataDir: "C:/Users/Remi/AppData/Local/Google/Chrome/User Data",
     // args: ["--proxy-server=http://162.23.125.34:8080"],
   });
