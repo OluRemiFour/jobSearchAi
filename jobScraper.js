@@ -1,10 +1,10 @@
 require("dotenv").config();
-const puppeteer = require("puppeteer");
+const puppeteer = require("puppeteer-extra");
 const nodemailer = require("nodemailer");
 const cron = require("node-cron");
-// const StealthPlugin = require("puppeteer-extra-plugin-stealth");
+const StealthPlugin = require("puppeteer-extra-plugin-stealth");
 // const { executablePath } = require("puppeteer");
-// puppeteer.use(StealthPlugin());
+puppeteer.use(StealthPlugin());
 
 const queryData =
   "Find PhD research job openings in Europe that require an MSc in Animal Science, Health, Production, or Agricultural Science. Prioritize opportunities that match my skills in statistical analysis (Excel, R, SQL) and laboratory expertise (PCR, biochemical analysis). Extract detailed information, including job description, requirements, application links, location, and contact details of the poster.";
@@ -16,15 +16,16 @@ const scrapeJobs = async () => {
   //   userDataDir: "C:/Users/Remi/AppData/Local/Google/Chrome/User Data",
   //   // args: ["--proxy-server=http://162.23.125.34:8080"],
   // });
-
   const browser = await puppeteer.launch({
-    headless: true, // Run headless (no UI for server environments)
+    headless: true,
+    // executablePath: "/usr/bin/chromium-browser",
     args: [
       "--no-sandbox",
-      "--disable-setuid-sandbox", // Required for some server environments
-      "--disable-dev-shm-usage", // For environments with limited shared memory
+      "--disable-setuid-sandbox",
+      "--disable-dev-shm-usage",
     ],
   });
+
   const page = await browser.newPage();
 
   console.log("🔍 Searching for jobs...");
