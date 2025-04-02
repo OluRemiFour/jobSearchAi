@@ -4,7 +4,7 @@
   "main": "jobScraper.js",
   "scripts": {
     "start": "node jobScraper.js",
-    "build": "echo \"Skipping build as we're using system Chromium\""
+    "build": "echo \"Using system Chromium\""
   },
   "keywords": [],
   "author": "",
