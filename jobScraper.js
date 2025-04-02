@@ -16,21 +16,39 @@ const scrapeJobs = async () => {
   //   userDataDir: "C:/Users/Remi/AppData/Local/Google/Chrome/User Data",
   //   // args: ["--proxy-server=http://162.23.125.34:8080"],
   // });
-  const browser = await puppeteer.launch({
-    headless: "new",
-    executablePath:
-      process.env.PUPPETEER_EXECUTABLE_PATH || "/usr/bin/chromium-browser",
-    args: [
-      "--no-sandbox",
-      "--disable-setuid-sandbox",
-      "--disable-dev-shm-usage",
-      "--single-process",
-      "--disable-accelerated-2d-canvas",
-      "--disable-gpu",
-      "--lang=en-US,en",
-    ],
-  });
 
+  // Try multiple possible Chromium paths
+  const possiblePaths = [
+    "/usr/bin/chromium-browser",
+    "/usr/bin/chromium",
+    "/usr/bin/google-chrome-stable",
+    process.env.PUPPETEER_EXECUTABLE_PATH,
+  ].filter(Boolean);
+  let browser;
+  let lastError;
+
+  for (const path of possiblePaths) {
+    try {
+      console.log(`🔧 Trying Chromium path: ${path}`);
+      browser = await puppeteer.launch({
+        headless: "new",
+        executablePath: path,
+        args: [
+          "--no-sandbox",
+          "--disable-setuid-sandbox",
+          "--disable-dev-shm-usage",
+          "--single-process",
+          "--disable-accelerated-2d-canvas",
+          "--disable-gpu",
+        ],
+      });
+      console.log("✅ Browser launched successfully");
+      break;
+    } catch (error) {
+      lastError = error;
+      console.log(`⚠️ Failed with path ${path}: ${error.message}`);
+    }
+  }
   const page = await browser.newPage();
 
   console.log("🔍 Searching for jobs...");
