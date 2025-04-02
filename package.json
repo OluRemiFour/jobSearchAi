@@ -1,10 +1,10 @@
 {
   "name": "jobsearch",
   "version": "1.0.0",
-  "main": "jobScraper.js",
+  "main": "aiAgent.js",
   "scripts": {
     "start": "node jobScraper.js",
-    "build": "npm install && npx puppeteer browsers install chrome"
+    "build": "npm install"
   },
   "keywords": [],
   "author": "",
@@ -19,7 +19,6 @@
     "nodemon": "^3.1.9",
     "openai": "^4.87.3",
     "puppeteer": "^24.4.0",
-    "puppeteer-core": "^24.4.0",
     "puppeteer-extra": "^3.3.6",
     "puppeteer-extra-plugin-stealth": "^2.11.2",
     "random-useragent": "^0.5.0"
