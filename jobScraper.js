@@ -1,5 +1,5 @@
 require("dotenv").config();
-const puppeteer = require("puppeteer-extra");
+const puppeteer = require("puppeteer");
 const nodemailer = require("nodemailer");
 const cron = require("node-cron");
 const StealthPlugin = require("puppeteer-extra-plugin-stealth");
