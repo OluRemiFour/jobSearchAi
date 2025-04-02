@@ -4,7 +4,7 @@
   "main": "jobScraper.js",
   "scripts": {
     "start": "node jobScraper.js",
-    "build": "echo \"Using system Chromium\""
+    "build": "npm install && npx puppeteer browsers install chrome"
   },
   "keywords": [],
   "author": "",
