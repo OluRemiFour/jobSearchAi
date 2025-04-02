@@ -1,5 +1,6 @@
 require("dotenv").config();
-const puppeteer = require("puppeteer-extra");
+// const puppeteer = require("puppeteer-extra");
+const puppeteer = require("puppeteer-core");
 const nodemailer = require("nodemailer");
 const cron = require("node-cron");
 const StealthPlugin = require("puppeteer-extra-plugin-stealth");
@@ -12,11 +13,10 @@ const queryData =
 const scrapeJobs = async () => {
   const browser = await puppeteer.launch({
     headless: false,
-    executablePath: "C:/Program Files/Chromium/Application/chrome.exe", // Path to chrome.exe
-    args: ["--no-sandbox", "--disable-setuid-sandbox"],
     // executablePath: "C:/Program Files/Google/Chrome/Application/chrome.exe",
-    userDataDir: "C:/Users/Remi/AppData/Local/Google/Chrome/User Data",
+    // userDataDir: "C:/Users/Remi/AppData/Local/Google/Chrome/User Data",
     // args: ["--proxy-server=http://162.23.125.34:8080"],
+    args: ["--no-sandbox", "--disable-setuid-sandbox"],
   });
   const page = await browser.newPage();
 
