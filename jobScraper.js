@@ -17,12 +17,12 @@ const scrapeJobs = async () => {
   //   // args: ["--proxy-server=http://162.23.125.34:8080"],
   // });
   const browser = await puppeteer.launch({
-    headless: true,
-    // executablePath: "/usr/bin/chromium-browser",
+    headless: "new", // Recommended headless mode
     args: [
       "--no-sandbox",
       "--disable-setuid-sandbox",
       "--disable-dev-shm-usage",
+      "--single-process",
     ],
   });
 
