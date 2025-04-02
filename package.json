@@ -4,7 +4,8 @@
   "main": "jobScraper.js",
   "scripts": {
     "start": "node jobScraper.js",
-    "build": "echo \"Using Puppeteer's bundled Chromium\""
+    "build": "npx puppeteer browsers install chrome",
+    "postinstall": "npx puppeteer browsers install chrome"
   },
   "keywords": [],
   "author": "",
