@@ -1,7 +1,7 @@
 {
   "name": "jobsearch",
   "version": "1.0.0",
-  "main": "aiAgent.js",
+  "main": "jobScraper.js",
   "scripts": {
     "start": "node jobScraper.js",
     "build": "echo \"Using Puppeteer's bundled Chromium\""
