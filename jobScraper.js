@@ -10,6 +10,24 @@ const queryData =
   "Find PhD research job openings in Europe that require an MSc in Animal Science, Health, Production, or Agricultural Science. Prioritize opportunities that match my skills in statistical analysis (Excel, R, SQL) and laboratory expertise (PCR, biochemical analysis). Extract detailed information, including job description, requirements, application links, location, and contact details of the poster.";
 
 const scrapeJobs = async () => {
+  // const browser = await puppeteer.launch({
+  //   args: [
+  //     "--disable-setuid-sandbox",
+  //     "--no-sandbox",
+  //     "--single-process",
+  //     "--no-zygote",
+  //   ],
+  //   // executablePath:
+  //   //   process.env.NODE_ENV === "production"
+  //   //     ? process.env.PUPPETEER_EXECUTABLE_PATH
+  //   //     : puppeteer.executablePath(),
+  //   // -------------------
+  //   // userDataDir: "C:/Users/Remi/AppData/Local/Google/Chrome/User Data",
+  //   // headless: false,
+  //   // executablePath: "C:/Program Files/Google/Chrome/Application/chrome.exe",
+  //   // args: ["--proxy-server=http://162.23.125.34:8080"],
+  // });
+
   const browser = await puppeteer.launch({
     args: [
       "--disable-setuid-sandbox",
@@ -17,16 +35,7 @@ const scrapeJobs = async () => {
       "--single-process",
       "--no-zygote",
     ],
-    executablePath: "google-chrome-stable",
-    // executablePath:
-    //   process.env.NODE_ENV === "production"
-    //     ? process.env.PUPPETEER_EXECUTABLE_PATH
-    //     : puppeteer.executablePath(),
-    // -------------------
-    // userDataDir: "C:/Users/Remi/AppData/Local/Google/Chrome/User Data",
-    // headless: false,
-    // executablePath: "C:/Program Files/Google/Chrome/Application/chrome.exe",
-    // args: ["--proxy-server=http://162.23.125.34:8080"],
+    executablePath: puppeteer.executablePath(), // Always use the built-in path
   });
   const page = await browser.newPage();
 
