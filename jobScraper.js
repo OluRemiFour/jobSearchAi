@@ -17,10 +17,12 @@ const scrapeJobs = async () => {
       "--single-process",
       "--no-zygote",
     ],
-    executablePath:
-      process.env.NODE_ENV === "production"
-        ? process.env.PUPPETEER_EXECUTABLE_PATH
-        : puppeteer.executablePath(),
+    executablePath: "google-chrome-stable",
+    // executablePath:
+    //   process.env.NODE_ENV === "production"
+    //     ? process.env.PUPPETEER_EXECUTABLE_PATH
+    //     : puppeteer.executablePath(),
+    // -------------------
     // userDataDir: "C:/Users/Remi/AppData/Local/Google/Chrome/User Data",
     // headless: false,
     // executablePath: "C:/Program Files/Google/Chrome/Application/chrome.exe",
