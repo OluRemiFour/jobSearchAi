@@ -40,6 +40,30 @@ FROM node:20-slim
 # Set the working directory for your app
 WORKDIR /usr/src/app
 
+# Install required libraries for Puppeteer to work
+RUN apt-get update && apt-get install -y \
+  libglib2.0-0 \
+  libnss3 \
+  libx11-dev \
+  libx264-dev \
+  libatk-bridge2.0-0 \
+  libatk1.0-0 \
+  libcups2 \
+  libgdk-pixbuf2.0-0 \
+  libgbm-dev \
+  libasound2 \
+  libxcomposite1 \
+  libxrandr2 \
+  libxdamage1 \
+  libappindicator3-1 \
+  libnspr4 \
+  libudev-dev \
+  ca-certificates \
+  fonts-liberation \
+  libappindicator3-1 \
+  libsecret-1-0 \
+  && rm -rf /var/lib/apt/lists/*
+
 # Copy package.json and package-lock.json
 COPY package*.json ./
 
