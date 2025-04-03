@@ -97,7 +97,7 @@ const scrapeJobs = async () => {
   return jobDetails; // ✅ Return the job details
 };
 
-// Function to remove duplicates
+// Function to remove duplicates job
 const filterUniqueJobs = (jobs) => {
   const seen = new Set();
   return jobs.filter((job) => {
