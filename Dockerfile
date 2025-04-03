@@ -37,29 +37,28 @@
 # Use Node.js 20 as the base image
 FROM node:20-slim
 
-# Set the working directory
+# Set the working directory for your app
 WORKDIR /usr/src/app
 
 # Copy package.json and package-lock.json
 COPY package*.json ./
 
-# Initialize npm separately to avoid idealTree errors
-RUN npm init -y 
+# Initialize npm (this step will create the package-lock.json if it doesn't exist)
+RUN npm init -y
 
-# Install dependencies
+# Install dependencies (including Puppeteer)
 RUN npm install puppeteer
 
-# Add a non-root user to run Puppeteer
+# Create a non-root user for Puppeteer
 RUN groupadd -r pptruser && useradd -r -g pptruser -G audio,video pptruser
 
-# Ensure correct permissions
-RUN mkdir -p /home/pptruser/Downloads \
-    && chown -R pptruser:pptruser /home/pptruser /usr/src/app
+# Ensure that 'pptruser' has access to all files
+RUN chown -R pptruser:pptruser /usr/src/app
 
-# Switch to the new user
+# Switch to the non-root user
 USER pptruser
 
-# Copy the rest of the application
+# Copy the rest of the application files
 COPY . .
 
 # Build the application (if applicable)
