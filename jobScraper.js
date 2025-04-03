@@ -17,12 +17,10 @@ const scrapeJobs = async () => {
       "--single-process",
       "--no-zygote",
     ],
-    executablePath: puppeteer.executablePath(),
-    //   // -------------------
-    //   // userDataDir: "C:/Users/Remi/AppData/Local/Google/Chrome/User Data",
-    //   // headless: false,
-    //   // executablePath: "C:/Program Files/Google/Chrome/Application/chrome.exe",
-    //   // args: ["--proxy-server=http://162.23.125.34:8080"],
+    userDataDir: "C:/Users/Remi/AppData/Local/Google/Chrome/User Data",
+    headless: false,
+    executablePath: "C:/Program Files/Google/Chrome/Application/chrome.exe",
+    args: ["--proxy-server=http://162.23.125.34:8080"],
   });
 
   const page = await browser.newPage();
@@ -125,7 +123,7 @@ const formatEmailContent = (jobs) => {
   jobs.forEach((job, index) => {
     emailBody += `
       <li style="margin-bottom: 20px; border-bottom: 1px solid #eee; padding-bottom: 10px;">
-        <h3><a href="${job.link}">${index + 1}. ${job.title}</a></h3>
+        <h3><a href="${job.link}">${index + 1} ${job.title}</a></h3>
         ${
           job.location
             ? `<p><strong>📍 Location:</strong> ${job.location}</p>`
