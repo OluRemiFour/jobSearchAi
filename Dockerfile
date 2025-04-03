@@ -43,17 +43,18 @@ WORKDIR /usr/src/app
 # Copy package.json and package-lock.json
 COPY package*.json ./
 
-# Initialize npm (this step will create the package-lock.json if it doesn't exist)
-RUN npm init -y
-
-# Install dependencies (including Puppeteer)
-RUN npm install puppeteer
+# Install dependencies
+RUN npm install --unsafe-perm=true
 
 # Create a non-root user for Puppeteer
 RUN groupadd -r pptruser && useradd -r -g pptruser -G audio,video pptruser
 
-# Ensure that 'pptruser' has access to all files
-RUN chown -R pptruser:pptruser /usr/src/app
+# Ensure 'pptruser' has access to all files and cache directories
+RUN chown -R pptruser:pptruser /usr/src/app && \
+    mkdir -p /home/pptruser && \
+    chown -R pptruser:pptruser /home/pptruser && \
+    mkdir -p /home/pptruser/.npm && \
+    chown -R pptruser:pptruser /home/pptruser/.npm
 
 # Switch to the non-root user
 USER pptruser
@@ -61,7 +62,15 @@ USER pptruser
 # Copy the rest of the application files
 COPY . .
 
-# Build the application (if applicable)
+# Clean up unnecessary files and logs
+RUN rm -rf /usr/src/app/node_modules/puppeteer/lib/cjs/puppeteer/node/install.js && \
+    rm -rf /usr/src/app/node_modules/puppeteer/lib/esm/puppeteer/node/install.js && \
+    rm -rf /usr/src/app/.npmrc && \
+    rm -rf /usr/src/app/package-lock.json && \
+    rm -rf /usr/src/app/node_modules/puppeteer && \
+    rm -rf /home/pptruser/.npm/_logs
+
+# Build the application
 RUN npm run build
 
 # Expose the application port
