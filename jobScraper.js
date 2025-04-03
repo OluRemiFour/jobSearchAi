@@ -1,112 +1,26 @@
 require("dotenv").config();
+const express = require("express");
+const app = express();
 const puppeteer = require("puppeteer-extra");
 const nodemailer = require("nodemailer");
 const cron = require("node-cron");
 const StealthPlugin = require("puppeteer-extra-plugin-stealth");
-// const { executablePath } = require("puppeteer");
+const PORT = process.env.PORT || 4000;
 puppeteer.use(StealthPlugin());
 
 const queryData =
   "Find PhD research job openings in Europe that require an MSc in Animal Science, Health, Production, or Agricultural Science. Prioritize opportunities that match my skills in statistical analysis (Excel, R, SQL) and laboratory expertise (PCR, biochemical analysis). Extract detailed information, including job description, requirements, application links, location, and contact details of the poster.";
-
-// const scrapeJobs = async () => {
-//   const browser = await puppeteer.launch({
-//     headless: true,
-//     args: [
-//       "--disable-setuid-sandbox",
-//       "--no-sandbox",
-//       "--single-process",
-//       "--no-zygote",
-//     ],
-//     // userDataDir: "C:/Users/Remi/AppData/Local/Google/Chrome/User Data",
-//     // executablePath: "C:/Program Files/Google/Chrome/Application/chrome.exe",
-//     // args: ["--proxy-server=http://162.23.125.34:8080"],
-//   });
-
-//   const page = await browser.newPage();
-
-//   console.log("🔍 Searching for jobs...");
-
-//   // Go to Google Jobs Search
-//   await page.goto(
-//     `https://www.google.com/search?q=${encodeURIComponent(
-//       queryData +
-//         " site:linkedin.com OR site:indeed.com OR site:researchgate.net OR site:glassdoor.com OR site:academia.edu OR site:x.com OR site:google.com"
-//       // " site:findaphd.com OR site:jobs.ac.uk/phd"
-//     )}`,
-//     {
-//       waitUntil: "networkidle2",
-//     }
-//   );
-
-//   // Wait for search results
-//   await page.waitForSelector("h3");
-
-//   // Extract job post links and titles
-//   const jobs = await page.evaluate(() => {
-//     return Array.from(document.querySelectorAll("h3"))
-//       .map((el) => {
-//         const link = el.closest("a")?.href; // Get job post URL
-//         return { title: el.innerText, link };
-//       })
-//       .filter((job) => job.link); // Ensure links are present
-//   });
-
-//   console.log("✅ Found Jobs:", jobs);
-
-//   let jobDetails = [];
-
-//   for (let job of jobs) {
-//     const jobPage = await browser.newPage();
-//     try {
-//       console.log(`🔎 Scraping job: ${job.title}`);
-
-//       await jobPage.goto(job.link, { waitUntil: "domcontentloaded" });
-
-//       // Extract job description
-//       const jobData = await jobPage.evaluate(() => {
-//         let description =
-//           document.querySelector(
-//             "p, .description, .job-desc, .jobDescriptionContent"
-//           )?.innerText || "No description available";
-//         let requirements =
-//           document.querySelector(".qualifications, .requirements, .req-list")
-//             ?.innerText || "No requirements listed";
-//         return { description, requirements };
-//       });
-
-//       jobDetails.push({
-//         title: job.title,
-//         link: job.link,
-//         description: jobData.description,
-//         requirements: jobData.requirements,
-//       });
-
-//       await jobPage.close();
-//     } catch (error) {
-//       console.log(`⚠️ Error scraping ${job.title}:`, error.message);
-//     }
-//   }
-
-//   console.log("📌 Final Job Listings:", jobDetails);
-//   await browser.close();
-
-//   return jobDetails; // ✅ Return the job details
-// };
-
-// Function to remove duplicates job post
-
 const scrapeJobs = async () => {
   const browser = await puppeteer.launch({
-    headless: true,
+    headless: false,
     args: [
       "--disable-setuid-sandbox",
       "--no-sandbox",
       "--single-process",
       "--no-zygote",
     ],
-    // userDataDir: "C:/Users/Remi/AppData/Local/Google/Chrome/User Data",
-    // executablePath: "C:/Program Files/Google/Chrome/Application/chrome.exe",
+    userDataDir: "C:/Users/Remi/AppData/Local/Google/Chrome/User Data",
+    executablePath: "C:/Program Files/Google/Chrome/Application/chrome.exe",
     // args: ["--proxy-server=http://162.23.125.34:8080"],
   });
 
@@ -126,21 +40,15 @@ const scrapeJobs = async () => {
     }
   );
 
-  // Wait for search results to load
-  await page.waitForSelector("body"); // Make sure the body is fully loaded
+  // Wait for search results
+  await page.waitForSelector("h3");
 
-  // Dynamically extract job titles by selecting heading tags like h1, h2, h3, etc.
+  // Extract job post links and titles
   const jobs = await page.evaluate(() => {
-    const jobElements = Array.from(
-      document.querySelectorAll(
-        "h1, h2, h3, h4, h5, h6, .job-title, .job-listing"
-      ) // Dynamically target heading tags and classes
-    );
-
-    return jobElements
+    return Array.from(document.querySelectorAll("h3"))
       .map((el) => {
         const link = el.closest("a")?.href; // Get job post URL
-        return { title: el.innerText.trim(), link };
+        return { title: el.innerText, link };
       })
       .filter((job) => job.link); // Ensure links are present
   });
@@ -156,17 +64,15 @@ const scrapeJobs = async () => {
 
       await jobPage.goto(job.link, { waitUntil: "domcontentloaded" });
 
-      // Extract job description and requirements dynamically using multiple possible selectors
+      // Extract job description
       const jobData = await jobPage.evaluate(() => {
         let description =
           document.querySelector(
             "p, .description, .job-desc, .jobDescriptionContent"
           )?.innerText || "No description available";
-
         let requirements =
           document.querySelector(".qualifications, .requirements, .req-list")
             ?.innerText || "No requirements listed";
-
         return { description, requirements };
       });
 
@@ -188,6 +94,101 @@ const scrapeJobs = async () => {
 
   return jobDetails; // ✅ Return the job details
 };
+
+// Function to remove duplicates job post
+
+// const scrapeJobs = async () => {
+//   const browser = await puppeteer.launch({
+//     headless: false,
+//     args: [
+//       "--disable-setuid-sandbox",
+//       "--no-sandbox",
+//       "--single-process",
+//       "--no-zygote",
+//     ],
+//     userDataDir: "C:/Users/Remi/AppData/Local/Google/Chrome/User Data",
+//     executablePath: "C:/Program Files/Google/Chrome/Application/chrome.exe",
+//     // args: ["--proxy-server=http://162.23.125.34:8080"],
+//   });
+
+//   const page = await browser.newPage();
+
+//   console.log("🔍 Searching for jobs...");
+
+//   // Go to Google Jobs Search
+//   await page.goto(
+//     `https://www.google.com/search?q=${encodeURIComponent(
+//       queryData +
+//         " site:linkedin.com OR site:indeed.com OR site:researchgate.net OR site:glassdoor.com OR site:academia.edu OR site:x.com OR site:google.com"
+//       // " site:findaphd.com OR site:jobs.ac.uk/phd"
+//     )}`,
+//     {
+//       waitUntil: "networkidle2",
+//     }
+//   );
+
+//   // Wait for search results to load
+//   await page.waitForSelector("body"); // Make sure the body is fully loaded
+
+//   // Dynamically extract job titles by selecting heading tags like h1, h2, h3, etc.
+//   const jobs = await page.evaluate(() => {
+//     const jobElements = Array.from(
+//       document.querySelectorAll(
+//         "h1, h2, h3, h4, h5, h6, .job-title, .job-listing"
+//       ) // Dynamically target heading tags and classes
+//     );
+
+//     return jobElements
+//       .map((el) => {
+//         const link = el.closest("a")?.href; // Get job post URL
+//         return { title: el.innerText.trim(), link };
+//       })
+//       .filter((job) => job.link); // Ensure links are present
+//   });
+
+//   console.log("✅ Found Jobs:", jobs);
+
+//   let jobDetails = [];
+
+//   for (let job of jobs) {
+//     const jobPage = await browser.newPage();
+//     try {
+//       console.log(`🔎 Scraping job: ${job.title}`);
+
+//       await jobPage.goto(job.link, { waitUntil: "domcontentloaded" });
+
+//       // Extract job description and requirements dynamically using multiple possible selectors
+//       const jobData = await jobPage.evaluate(() => {
+//         let description =
+//           document.querySelector(
+//             "p, .description, .job-desc, .jobDescriptionContent"
+//           )?.innerText || "No description available";
+
+//         let requirements =
+//           document.querySelector(".qualifications, .requirements, .req-list")
+//             ?.innerText || "No requirements listed";
+
+//         return { description, requirements };
+//       });
+
+//       jobDetails.push({
+//         title: job.title,
+//         link: job.link,
+//         description: jobData.description,
+//         requirements: jobData.requirements,
+//       });
+
+//       await jobPage.close();
+//     } catch (error) {
+//       console.log(`⚠️ Error scraping ${job.title}:`, error.message);
+//     }
+//   }
+
+//   console.log("📌 Final Job Listings:", jobDetails);
+//   await browser.close();
+
+//   return jobDetails; // ✅ Return the job details
+// };
 
 const filterUniqueJobs = (jobs) => {
   const seen = new Set();
@@ -280,6 +281,18 @@ const sendTestEmail = async (jobArray) => {
 cron.schedule("*/20 * * * *", () => {
   console.log("⏳ Running scheduled job scraping...");
   scrapeJobs();
+});
+
+app.get("/", (req, res) => {
+  res.send("Job Scraper is running...");
+});
+
+app.get("/health", (req, res) => {
+  res.status(200).send("Job Health Ping");
+});
+
+app.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`);
 });
 
 // ---------------------------------------------------------
