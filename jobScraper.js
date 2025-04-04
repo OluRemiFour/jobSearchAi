@@ -361,7 +361,7 @@ const formatEmailContent = (jobs) => {
   let emailBody = `<h1>📢 PhD Research Openings in Europe</h1><ul>`;
   jobs.forEach((job, index) => {
     emailBody += `
-      <p style="margin-bottom: 20px; border-bottom: 1px solid #eee; padding-bottom: 10px;">
+      <p style="margin-bottom: 10px; border-bottom: 1px solid #eee; padding-bottom: 5px;">
         <h3><a href="${job.link}">${index + 1} ${job.title}</a></h3>
         ${
           job.location
